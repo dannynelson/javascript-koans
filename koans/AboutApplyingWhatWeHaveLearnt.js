@@ -35,7 +35,6 @@ describe("About Applying What We Have Learnt", function() {
     expect(productsICanEat.length).toBe(1);
   });
 
-//NEEDS WORK
   it("given I'm allergic to nuts and hate mushrooms, it should find a pizza I can eat (functional)", function () {
 
       var productsICanEat = [];
@@ -91,7 +90,7 @@ describe("About Applying What We Have Learnt", function() {
 
     expect(ingredientCount['mushrooms']).toBe(2);
   });
-//NEEDS WORK
+
   it("should count the ingredient occurrence (functional)", function () {
     var ingredientCount = { "{ingredient name}": 0 };
 
@@ -109,27 +108,162 @@ describe("About Applying What We Have Learnt", function() {
   });
 
   /*********************************************************************************/
-  /* UNCOMMENT FOR EXTRA CREDIT */
-  /*
+
   it("should find the largest prime factor of a composite number", function () {
-  
+    
+    var isPrime = function(num) {
+      for (var i = 2; i < num; i++) {
+        if (num % i === 0) return false;
+      }
+      return true;
+    }
+
+    var largestPrimeFactor = function(num) {
+      var primeFactors = [];
+      var i = 2;
+      while (num !== 1) {
+        if (isPrime(i)) {
+          while (num % i === 0) {
+            primeFactors.push(i);
+            num /= i;
+          }
+        }
+        i++;
+      }
+      return _(primeFactors.sort()).last();
+    }
+
+    expect(largestPrimeFactor(20)).toBe(5);
+
   });
 
   it("should find the largest palindrome made from the product of two 3 digit numbers", function () {
-    
+
+    var isPalindrome = function(num) {
+      var reverse = parseInt(num.toString().split('').reverse().join(''));
+      return num === reverse;
+    }
+
+    var threeDigits = function() {
+      var combinations = [];
+      var threeDigits = _.range(100, 1000);
+      _.each(threeDigits, function(num1) {
+        _.each(threeDigits, function(num2) {
+          combinations.push(num1 * num2);
+        })
+      })
+      return combinations;
+    }
+
+    var largestPalindrome = function(array) {
+      var palindromes = [];
+      _.each(array, function(num) {
+        if (isPalindrome(num)) {
+          palindromes.push(num); 
+        }
+      })
+      //sort needs a comparison function!!!
+      var sorted = palindromes.sort(function(a,b) {return a - b});
+      return sorted[sorted.length -1];
+    }
+
+    expect(largestPalindrome(threeDigits())).toBe(906609);
   });
 
   it("should find the smallest number divisible by each of the numbers 1 to 20", function () {
-      
+
+    // takes too long to loop through each number
+    // instead, take highest power of each prime factor in (1-20), and multiply them together
+    var isPrime = function(num) {
+      if (num <= 1) return false;
+      for (var i = 2; i < num; i++) {
+        if (num % i === 0) return false;
+      }
+      return true;
+    }
+
+    var highestPowerOfPrimeFactors = function(range) {
+      // {prime factor: highest power}
+      var primesCount = {};
+      _(range).each(function(num) {
+        // calculate prime factors and their exponent
+        for (var div = 2; div <= num; div++) {
+          var counter = 0; //to count exponent
+          if (isPrime(div) && num % div === 0) {
+            while (num % div === 0) {
+              num /= div;
+              counter++;
+            }
+            if (primesCount[div] === undefined || counter > primesCount[div]) {
+              primesCount[div] = counter;
+            }
+          }
+        }
+      })
+      return primesCount;
+    }
     
+    var smallestDivisible = function(range) {
+      var primesCount = highestPowerOfPrimeFactors(range);
+      var results = [];
+      _(primesCount).each(function(value, prop) {
+        results.push(Math.pow(prop, value));
+      })
+      return _(results).reduce(function(memo,num){return memo*num;});
+    }
+
+    var range = _.range(1, 21);
+    expect(smallestDivisible(range)).toBe(232792560);
   });
 
   it("should find the difference between the sum of the squares and the square of the sums", function () {
-    
+  
+    var sumOfSquares = function(numbers) {
+      var squaredNums = [];
+      _(numbers).each(function(num) {
+        squaredNums.push(num * num);
+      })
+      return _(squaredNums).reduce(function(memo,num) {return memo+num});
+    }
+
+    var squareOfSum = function(numbers) {
+      var sum = _(numbers).reduce(function(memo,num) {return memo+num});
+      return sum * sum;
+    }
+
+    var difference = function(numbers) {
+      return squareOfSum(numbers) - sumOfSquares(numbers);
+    }
+
+    var range = _.range(1,101);
+
+    expect(difference(range)).toBe(25164150);
+
   });
 
   it("should find the 10001st prime", function () {
+    
+    var isPrime = function(num) {
+      if (num <= 1) return false;
+      for (var i = 2; i < num; i++) {
+        if (num % i === 0) return false;
+      }
+      return true;
+    }
 
+    var nthPrime = function(n) {
+      var num = 1;
+      var counter = 0;
+      while (counter < n) {
+        num++;
+        if (isPrime(num)) {
+          counter++;
+        }
+      }
+      return num;
+    }
+
+    expect(nthPrime(10001)).toBe(104743);
   });
-  */
+
 });
